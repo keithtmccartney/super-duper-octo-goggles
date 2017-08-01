@@ -1,0 +1,44 @@
+[
+  {
+    "ID": 1,
+    "Lender": "Bob",
+    "Rate": 0.075,
+    "Available": 640
+  },
+  {
+    "ID": 2,
+    "Lender": "Jane",
+    "Rate": 0.069,
+    "Available": 480
+  },
+  {
+    "ID": 3,
+    "Lender": "Fred",
+    "Rate": 0.071,
+    "Available": 520
+  },
+  {
+    "ID": 4,
+    "Lender": "Mary",
+    "Rate": 0.104,
+    "Available": 170
+  },
+  {
+    "ID": 5,
+    "Lender": "John",
+    "Rate": 0.081,
+    "Available": 320
+  },
+  {
+    "ID": 6,
+    "Lender": "Dave",
+    "Rate": 0.074,
+    "Available": 140
+  },
+  {
+    "ID": 7,
+    "Lender": "Angela",
+    "Rate": 0.071,
+    "Available": 60
+  }
+]
