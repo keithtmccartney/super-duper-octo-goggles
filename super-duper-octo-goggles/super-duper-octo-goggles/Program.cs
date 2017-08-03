@@ -10,6 +10,23 @@ namespace super_duper_octo_goggles
     {
         static void Main(string[] args)
         {
+            if (args.Length == 2) //This was originally going to be: args.Length != 0 && args.Length == 2.
+            {
+                var market_file = "";
+                int loan_amount = 0;
+
+                for (int i = 0; i < args.Length; i++)
+                {
+                    if (string.Compare(args[1], "market.csv", true) == 0) //This was originally going to be: args[1] == "market.csv".
+                    {
+                        Console.WriteLine("Please enter a numeric argument.");
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Please enter a correct amount of arguments; provide [1] a market file alongside [2] a loan amount, e.g. cmd> quote.exe market.csv 1500.");
+            }
         }
 
         public int Add(int first, int second)
