@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,18 +27,22 @@ namespace super_duper_octo_goggles
                         }
                         else
                         {
-                            Console.WriteLine("Please enter a correct loan amount, e.g. cmd> quote.exe market.csv 1500.");
+                            Console.WriteLine(ConfigurationSettings.AppSettings["loan_amount_message"]);
+
+                            break;
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Please enter a correct market file, e.g. cmd> quote.exe market.csv 1500.");
+                        Console.WriteLine(ConfigurationSettings.AppSettings["market_file_message"]);
+
+                        break;
                     }
                 }
             }
             else
             {
-                Console.WriteLine("Please enter a correct amount of arguments; provide [1] a market file alongside [2] a loan amount, e.g. cmd> quote.exe market.csv 1500.");
+                Console.WriteLine(ConfigurationSettings.AppSettings["argument_message"]);
             }
         }
 

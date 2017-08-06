@@ -16,7 +16,14 @@ namespace super_duper_octo_goggles.Helpers
 
                 bool _IsNumber = int.TryParse(Convert.ToString(value), System.Globalization.NumberStyles.Any, System.Globalization.NumberFormatInfo.InvariantInfo, out _value);
 
-                return true;
+                if (_IsNumber == true)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception ex)
             {
