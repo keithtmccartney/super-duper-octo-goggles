@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,17 +13,19 @@ namespace super_duper_octo_goggles
     {
         static void Main(string[] args)
         {
+            string market_file = "market.csv";
+            int loan_amount = 0;
+
             if (args.Length == 2) //This was originally going to be: args.Length != 0 && args.Length == 2;
             {
-                var market_file = "";
-                int loan_amount = 0;
-
                 for (int i = 0; i < args.Length; i++)
                 {
-                    if (string.Compare(args[0], "market.csv", true) == 0) //This was originally going to be: args[1] == "market.csv"; this could be added to the Helper Collection;
+                    if (args[0].Contains(market_file)) //This was firstly going to be: args[1] == "market.csv"; this could be added to the Helper Collection; this was secondly going to be: string.Compare(args[0], market_file, true) == 0;
                     {
                         if (HelperCollection.IsNumeric(args[1]) == true)
                         {
+                            loan_amount = Convert.ToInt32(args[1]);
+
                             i++;
                         }
                         else
@@ -43,6 +46,40 @@ namespace super_duper_octo_goggles
             else
             {
                 Console.WriteLine(ConfigurationSettings.AppSettings["argument_message"]);
+            }
+
+            if (File.Exists(args[0]) == true)
+            {
+                string market_file_path = args[0];
+                string market_file_contents = "";
+
+                using (StreamReader _reader = new StreamReader(File.OpenRead(market_file_path)))
+                {
+                    market_file_contents = _reader.ReadToEnd();
+                }
+
+                List<string[]> _list = new List<string[]>();
+
+                string[] _separator = market_file_contents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (string _line in _separator)
+                {
+                    _list.Add(_line.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
+                }
+
+                int _column = 0;
+                int _row = 0;
+
+                Console.WriteLine("Column{0}, Row{1} = \"{2}\"", _column, _row, _list[_column][_row]);
+
+                /*_column = 4;
+                _row = 2;
+
+                Console.WriteLine("Column{0}, Row{1} = \"{2}\"", _column, _row, _list[_column][_row]);*/
+            }
+            else
+            {
+                Console.WriteLine(ConfigurationSettings.AppSettings["file_message"]);
             }
         }
 
