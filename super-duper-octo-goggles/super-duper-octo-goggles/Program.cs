@@ -13,11 +13,11 @@ namespace super_duper_octo_goggles
     {
         static void Main(string[] args)
         {
-            bool _continue = false;
-            string _market_file = "market.csv";
+            string _market_file = ConfigurationSettings.AppSettings["market_file"];
             int _loan_amount = 0;
-            int _loan_value_minimum = 1000;
-            int _loan_value_maximum = 15000;
+            int _loan_value_minimum = Convert.ToInt32(ConfigurationSettings.AppSettings["loan_value_minimum"]);
+            int _loan_value_maximum = Convert.ToInt32(ConfigurationSettings.AppSettings["loan_value_maximum"]);
+            bool _continue = false;
 
             Console.WriteLine(ConfigurationSettings.AppSettings["enter_message"]);
 
@@ -39,6 +39,8 @@ namespace super_duper_octo_goggles
                             }
                             else
                             {
+                                Console.WriteLine(ConfigurationSettings.AppSettings["requested_amount_message"] + _loan_amount);
+
                                 i++;
 
                                 _continue = true;
@@ -85,10 +87,10 @@ namespace super_duper_octo_goggles
                         _list.Add(_line.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
                     }
 
-                    int _column = 0;
+                    /*int _column = 0;
                     int _row = 0;
 
-                    Console.WriteLine("Column{0}, Row{1} = \"{2}\"", _column, _row, _list[_column][_row]);
+                    Console.WriteLine("Column{0}, Row{1} = \"{2}\"", _column, _row, _list[_column][_row]);*/
 
                     /*_column = 4;
                     _row = 2;
