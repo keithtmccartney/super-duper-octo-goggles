@@ -13,20 +13,36 @@ namespace super_duper_octo_goggles
     {
         static void Main(string[] args)
         {
-            string market_file = "market.csv";
-            int loan_amount = 0;
+            bool _continue = false;
+            string _market_file = "market.csv";
+            int _loan_amount = 0;
+            int _loan_value_minimum = 1000;
+            int _loan_value_maximum = 15000;
+
+            Console.WriteLine(ConfigurationSettings.AppSettings["enter_message"]);
 
             if (args.Length == 2) //This was originally going to be: args.Length != 0 && args.Length == 2;
             {
                 for (int i = 0; i < args.Length; i++)
                 {
-                    if (args[0].Contains(market_file)) //This was firstly going to be: args[1] == "market.csv"; this could be added to the Helper Collection; this was secondly going to be: string.Compare(args[0], market_file, true) == 0;
+                    if (args[0].Contains(_market_file)) //This was firstly going to be: args[1] == "market.csv"; this could be added to the Helper Collection; this was secondly going to be: string.Compare(args[0], market_file, true) == 0;
                     {
                         if (HelperCollection.IsNumeric(args[1]) == true)
                         {
-                            loan_amount = Convert.ToInt32(args[1]);
+                            _loan_amount = Convert.ToInt32(args[1]);
 
-                            i++;
+                            if (_loan_amount < _loan_value_minimum || _loan_amount > _loan_value_maximum)
+                            {
+                                Console.WriteLine(ConfigurationSettings.AppSettings["loan_value_message"]);
+
+                                break;
+                            }
+                            else
+                            {
+                                i++;
+
+                                _continue = true;
+                            }
                         }
                         else
                         {
@@ -48,39 +64,44 @@ namespace super_duper_octo_goggles
                 Console.WriteLine(ConfigurationSettings.AppSettings["argument_message"]);
             }
 
-            if (File.Exists(args[0]) == true)
+            if (_continue == true)
             {
-                string market_file_path = args[0];
-                string market_file_contents = "";
-
-                using (StreamReader _reader = new StreamReader(File.OpenRead(market_file_path)))
+                if (File.Exists(args[0]) == true)
                 {
-                    market_file_contents = _reader.ReadToEnd();
+                    string _market_file_path = args[0];
+                    string _market_file_contents = "";
+
+                    using (StreamReader _reader = new StreamReader(File.OpenRead(_market_file_path)))
+                    {
+                        _market_file_contents = _reader.ReadToEnd();
+                    }
+
+                    List<string[]> _list = new List<string[]>();
+
+                    string[] _separator = _market_file_contents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (string _line in _separator)
+                    {
+                        _list.Add(_line.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
+                    }
+
+                    int _column = 0;
+                    int _row = 0;
+
+                    Console.WriteLine("Column{0}, Row{1} = \"{2}\"", _column, _row, _list[_column][_row]);
+
+                    /*_column = 4;
+                    _row = 2;
+
+                    Console.WriteLine("Column{0}, Row{1} = \"{2}\"", _column, _row, _list[_column][_row]);*/
                 }
-
-                List<string[]> _list = new List<string[]>();
-
-                string[] _separator = market_file_contents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-
-                foreach (string _line in _separator)
+                else
                 {
-                    _list.Add(_line.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
+                    Console.WriteLine(ConfigurationSettings.AppSettings["market_file_message"]);
                 }
-
-                int _column = 0;
-                int _row = 0;
-
-                Console.WriteLine("Column{0}, Row{1} = \"{2}\"", _column, _row, _list[_column][_row]);
-
-                /*_column = 4;
-                _row = 2;
-
-                Console.WriteLine("Column{0}, Row{1} = \"{2}\"", _column, _row, _list[_column][_row]);*/
             }
-            else
-            {
-                Console.WriteLine(ConfigurationSettings.AppSettings["file_message"]);
-            }
+
+            Console.WriteLine(ConfigurationSettings.AppSettings["exit_message"]);
         }
 
         public int Add(int first, int second)
