@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,10 +16,19 @@ namespace super_duper_octo_goggles
         static void Main(string[] args)
         {
             string _market_file = ConfigurationSettings.AppSettings["market_file"];
-            int _loan_amount = 0;
+            int _loan_amount = Convert.ToInt32(args[1]);
             int _loan_value_minimum = Convert.ToInt32(ConfigurationSettings.AppSettings["loan_value_minimum"]);
             int _loan_value_maximum = Convert.ToInt32(ConfigurationSettings.AppSettings["loan_value_maximum"]);
             bool _continue = false;
+            int _rate_column = 0;
+            string _market_file_path = args[0];
+            string _market_file_contents;
+            string _market_file_headers;
+            List<string[]> _list_headers = new List<string[]>();
+            List<int> _list_contents = new List<int>(); //This was firstly going to be: List<string[]> _list_contents = new List<string[]>(); see the commented-out Loop below with '_list_contents.Add(_line_contents.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));' logic;
+            string[] _headers;
+            string[] _contents;
+            string[] _collection;
 
             Console.WriteLine(ConfigurationSettings.AppSettings["enter_message"]);
 
@@ -29,8 +40,6 @@ namespace super_duper_octo_goggles
                     {
                         if (HelperCollection.IsNumeric(args[1]) == true)
                         {
-                            _loan_amount = Convert.ToInt32(args[1]);
-
                             if (_loan_amount < _loan_value_minimum || _loan_amount > _loan_value_maximum)
                             {
                                 Console.WriteLine(ConfigurationSettings.AppSettings["loan_value_message"]);
@@ -68,34 +77,53 @@ namespace super_duper_octo_goggles
 
             if (_continue == true)
             {
-                if (File.Exists(args[0]) == true)
+                if (File.Exists(_market_file_path) == true)
                 {
-                    string _market_file_path = args[0];
-                    string _market_file_contents = "";
-
                     using (StreamReader _reader = new StreamReader(File.OpenRead(_market_file_path)))
                     {
+                        _market_file_headers = _reader.ReadLine();
+
                         _market_file_contents = _reader.ReadToEnd();
                     }
 
-                    List<string[]> _list = new List<string[]>();
+                    _headers = _market_file_headers.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                    _contents = _market_file_contents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
-                    string[] _separator = _market_file_contents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-
-                    foreach (string _line in _separator)
+                    foreach (string _line_headers in _headers)
                     {
-                        _list.Add(_line.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
+                        _list_headers.Add(_line_headers.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
                     }
 
-                    /*int _column = 0;
-                    int _row = 0;
+                    _collection = _market_file_headers.Split(',');
 
-                    Console.WriteLine("Column{0}, Row{1} = \"{2}\"", _column, _row, _list[_column][_row]);*/
+                    for (int i = 0; i < _collection.Length;)
+                    {
+                        if (_collection[i].Contains("Rate"))
+                        {
+                            _rate_column = i;
 
-                    /*_column = 4;
-                    _row = 2;
+                            break;
+                        }
 
-                    Console.WriteLine("Column{0}, Row{1} = \"{2}\"", _column, _row, _list[_column][_row]);*/
+                        i++;
+                    }
+
+                    /*foreach (string _line_contents in _contents)
+                    {
+                        _list_contents.Add(_line_contents.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
+                    }*/
+
+                    for (int i = 0; i < _contents.Length; i++)
+                    {
+                        var _result = _contents[i].Split(',').Skip(_rate_column).FirstOrDefault();
+
+                        if (!HelperCollection.IsNumeric(_result) == true)
+                        {
+                            HelperCollection.Cleanup(_result);
+                        }
+
+                        _list_contents.Add(Convert.ToInt32(_result));
+                    }
                 }
                 else
                 {

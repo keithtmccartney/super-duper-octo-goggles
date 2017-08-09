@@ -32,5 +32,20 @@ namespace super_duper_octo_goggles.Helpers
 
             return false;
         }
+
+        public static string Cleanup(string value)
+        {
+            string _value = value;
+
+            try
+            {
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return _value;
+        }
     }
 }
