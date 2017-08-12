@@ -20,15 +20,23 @@ namespace super_duper_octo_goggles
             int _loan_value_minimum = Convert.ToInt32(ConfigurationSettings.AppSettings["loan_value_minimum"]);
             int _loan_value_maximum = Convert.ToInt32(ConfigurationSettings.AppSettings["loan_value_maximum"]);
             bool _continue = false;
+            int _id_column = 0;
             int _rate_column = 0;
+            int _available_column = 0;
             string _market_file_path = args[0];
             string _market_file_contents;
             string _market_file_headers;
             List<string[]> _list_headers = new List<string[]>();
-            List<int> _list_contents = new List<int>(); //This was firstly going to be: List<string[]> _list_contents = new List<string[]>(); see the commented-out Loop below with '_list_contents.Add(_line_contents.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));' logic;
+            decimal[][] _jagged; //This was firstly going to be: List<string[]> _list_contents = new List<string[]>(); see the commented-out Loop below with '_list_contents.Add(_line_contents.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));' logic; this was secondly going to be: List<decimal> _list_contents = new List<decimal>();
             string[] _headers;
             string[] _contents;
             string[] _collection;
+            string _id_input;
+            string _rate_input;
+            string _available_input;
+            decimal _id_input_result;
+            decimal _rate_input_result;
+            decimal _available_input_result;
 
             Console.WriteLine(ConfigurationSettings.AppSettings["enter_message"]);
 
@@ -89,6 +97,8 @@ namespace super_duper_octo_goggles
                     _headers = _market_file_headers.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                     _contents = _market_file_contents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
+                    _jagged = new decimal[_contents.Length][];
+
                     foreach (string _line_headers in _headers)
                     {
                         _list_headers.Add(_line_headers.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
@@ -98,32 +108,100 @@ namespace super_duper_octo_goggles
 
                     for (int i = 0; i < _collection.Length;)
                     {
+                        if (_collection[i].Contains("ID"))
+                        {
+                            _id_column = i;
+
+                            /*break;*/
+                        }
+
                         if (_collection[i].Contains("Rate"))
                         {
                             _rate_column = i;
 
-                            break;
+                            /*break;*/
+                        }
+
+                        if (_collection[i].Contains("Available"))
+                        {
+                            _available_column = i;
+
+                            /*break;*/
                         }
 
                         i++;
                     }
 
-                    /*foreach (string _line_contents in _contents)
+                    for (int i = 0; i < _contents.Length; i++) //This was firstly going to be: foreach (string _line_contents in _contents) { _list_contents.Add(_line_contents.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)); };
                     {
-                        _list_contents.Add(_line_contents.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
-                    }*/
+                        _id_input = _contents[i].Split(',').Skip(_id_column).FirstOrDefault();
+                        _rate_input = _contents[i].Split(',').Skip(_rate_column).FirstOrDefault();
+                        _available_input = _contents[i].Split(',').Skip(_available_column).FirstOrDefault();
 
-                    for (int i = 0; i < _contents.Length; i++)
-                    {
-                        var _result = _contents[i].Split(',').Skip(_rate_column).FirstOrDefault();
+                        _jagged[i] = new decimal[3];
 
-                        if (!HelperCollection.IsNumeric(_result) == true)
+                        try
                         {
-                            HelperCollection.Cleanup(_result);
+                            if (!HelperCollection.IsNumeric(_id_input) == true)
+                            {
+                                _id_input = HelperCollection.Cleanup(_id_input);
+
+                                _id_input_result = Convert.ToDecimal(_id_input);
+
+                                /*_list_contents.Insert(i, _result_id_input); //This was firstly going to be: _list_contents.Add(Convert.ToInt32(_result));*/
+
+                                /*_list_contents.Add(_result_id_input);*/
+
+                                _jagged[i][0] = _id_input_result;
+                            }
+
+                            if (!HelperCollection.IsNumeric(_rate_input) == true)
+                            {
+                                _rate_input = HelperCollection.Cleanup(_rate_input);
+
+                                _rate_input_result = Convert.ToDecimal(_rate_input);
+
+                                /*_list_contents.Insert(i, _result_rate_input); //This was firstly going to be: _list_contents.Add(Convert.ToInt32(_result));*/
+
+                                /*_list_contents.Add(_result_rate_input);*/
+
+                                _jagged[i][1] = _rate_input_result;
+                            }
+
+                            if (!HelperCollection.IsNumeric(_available_input) == true)
+                            {
+                                _available_input = HelperCollection.Cleanup(_available_input);
+
+                                _available_input_result = Convert.ToDecimal(_available_input);
+
+                                /*_list_contents.Insert(i, _result_available_input); //This was firstly going to be: _list_contents.Add(Convert.ToInt32(_result));*/
+
+                                /*_list_contents.Add(_result_available_input);*/
+
+                                _jagged[i][2] = _available_input_result;
+                            }
+
+                            /*_list_contents.Add(_result); //This was firstly going to be: _list_contents.Add(Convert.ToInt32(_result));*/
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
                         }
 
-                        _list_contents.Add(Convert.ToInt32(_result));
+                        /*if (i != _id_column && i != _rate_column)
+                        {
+                            _contents[i].Remove(i); //This was firstly going to be: _input = _contents[i].Split(',').Skip(_rate_column).FirstOrDefault();
+                        }*/
+
+                        /*if (i != _id_column && i != _rate_column)
+                        {
+                            _id_rate.Add(_contents[i]); // FIX THIS FROM STORING RECORD 0 AND RECORD 2 TO COLUMN 0 AND COLUMN 2
+                        }*/
                     }
+
+                    /*decimal[] s = _list_contents.ToArray();*/
+
+                    /*_list_contents.Sort();*/
                 }
                 else
                 {
