@@ -35,17 +35,19 @@ namespace super_duper_octo_goggles.Helpers
 
         public static string Cleanup(string value)
         {
-            string _value = value;
+            string _value_input = "";
 
             try
             {
+                _value_input = value.Replace("\\", "");
+                _value_input = value.Replace("\"", "");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
 
-            return _value;
+            return _value_input;
         }
     }
 }
