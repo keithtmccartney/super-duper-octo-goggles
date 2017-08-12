@@ -16,35 +16,46 @@ namespace super_duper_octo_goggles
         static void Main(string[] args)
         {
             string _market_file = ConfigurationSettings.AppSettings["market_file"];
+
             int _loan_amount = Convert.ToInt32(args[1]);
+
             int _loan_value_minimum = Convert.ToInt32(ConfigurationSettings.AppSettings["loan_value_minimum"]);
             int _loan_value_maximum = Convert.ToInt32(ConfigurationSettings.AppSettings["loan_value_maximum"]);
+
             bool _continue = false;
+
             int _id_column = 0;
             int _rate_column = 0;
             int _available_column = 0;
+
             string _market_file_path = args[0];
+
             string _market_file_contents;
             string _market_file_headers;
+
             List<string[]> _list_headers = new List<string[]>();
-            decimal[][] _jagged; //This was firstly going to be: List<string[]> _list_contents = new List<string[]>(); see the commented-out Loop below with '_list_contents.Add(_line_contents.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));' logic; this was secondly going to be: List<decimal> _list_contents = new List<decimal>();
+
+            decimal[][] _jagged;
+
             string[] _headers;
             string[] _contents;
             string[] _collection;
+
             string _id_input;
             string _rate_input;
             string _available_input;
+
             decimal _id_input_result;
             decimal _rate_input_result;
             decimal _available_input_result;
 
             Console.WriteLine(ConfigurationSettings.AppSettings["enter_message"]);
 
-            if (args.Length == 2) //This was originally going to be: args.Length != 0 && args.Length == 2;
+            if (args.Length == 2)
             {
                 for (int i = 0; i < args.Length; i++)
                 {
-                    if (args[0].Contains(_market_file)) //This was firstly going to be: args[1] == "market.csv"; this could be added to the Helper Collection; this was secondly going to be: string.Compare(args[0], market_file, true) == 0;
+                    if (args[0].Contains(_market_file))
                     {
                         if (HelperCollection.IsNumeric(args[1]) == true)
                         {
@@ -85,127 +96,115 @@ namespace super_duper_octo_goggles
 
             if (_continue == true)
             {
-                if (File.Exists(_market_file_path) == true)
+                try
                 {
-                    using (StreamReader _reader = new StreamReader(File.OpenRead(_market_file_path)))
+                    if (File.Exists(_market_file_path) == true)
                     {
-                        _market_file_headers = _reader.ReadLine();
-
-                        _market_file_contents = _reader.ReadToEnd();
-                    }
-
-                    _headers = _market_file_headers.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                    _contents = _market_file_contents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-
-                    _jagged = new decimal[_contents.Length][];
-
-                    foreach (string _line_headers in _headers)
-                    {
-                        _list_headers.Add(_line_headers.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
-                    }
-
-                    _collection = _market_file_headers.Split(',');
-
-                    for (int i = 0; i < _collection.Length;)
-                    {
-                        if (_collection[i].Contains("ID"))
+                        using (StreamReader _reader = new StreamReader(File.OpenRead(_market_file_path)))
                         {
-                            _id_column = i;
+                            _market_file_headers = _reader.ReadLine();
 
-                            /*break;*/
+                            _market_file_contents = _reader.ReadToEnd();
                         }
 
-                        if (_collection[i].Contains("Rate"))
-                        {
-                            _rate_column = i;
+                        _headers = _market_file_headers.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                        _contents = _market_file_contents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
-                            /*break;*/
+                        _jagged = new decimal[_contents.Length][];
+
+                        foreach (string _line_headers in _headers)
+                        {
+                            _list_headers.Add(_line_headers.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries));
                         }
 
-                        if (_collection[i].Contains("Available"))
+                        _collection = _market_file_headers.Split(',');
+
+                        for (int i = 0; i < _collection.Length;)
                         {
-                            _available_column = i;
-
-                            /*break;*/
-                        }
-
-                        i++;
-                    }
-
-                    for (int i = 0; i < _contents.Length; i++) //This was firstly going to be: foreach (string _line_contents in _contents) { _list_contents.Add(_line_contents.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)); };
-                    {
-                        _id_input = _contents[i].Split(',').Skip(_id_column).FirstOrDefault();
-                        _rate_input = _contents[i].Split(',').Skip(_rate_column).FirstOrDefault();
-                        _available_input = _contents[i].Split(',').Skip(_available_column).FirstOrDefault();
-
-                        _jagged[i] = new decimal[3];
-
-                        try
-                        {
-                            if (!HelperCollection.IsNumeric(_id_input) == true)
+                            try
                             {
-                                _id_input = HelperCollection.Cleanup(_id_input);
+                                if (_collection[i].Contains("ID"))
+                                {
+                                    _id_column = i;
+                                }
 
-                                _id_input_result = Convert.ToDecimal(_id_input);
+                                if (_collection[i].Contains("Rate"))
+                                {
+                                    _rate_column = i;
+                                }
 
-                                /*_list_contents.Insert(i, _result_id_input); //This was firstly going to be: _list_contents.Add(Convert.ToInt32(_result));*/
+                                if (_collection[i].Contains("Available"))
+                                {
+                                    _available_column = i;
+                                }
 
-                                /*_list_contents.Add(_result_id_input);*/
-
-                                _jagged[i][0] = _id_input_result;
+                                i++;
                             }
-
-                            if (!HelperCollection.IsNumeric(_rate_input) == true)
+                            catch (Exception ex)
                             {
-                                _rate_input = HelperCollection.Cleanup(_rate_input);
-
-                                _rate_input_result = Convert.ToDecimal(_rate_input);
-
-                                /*_list_contents.Insert(i, _result_rate_input); //This was firstly going to be: _list_contents.Add(Convert.ToInt32(_result));*/
-
-                                /*_list_contents.Add(_result_rate_input);*/
-
-                                _jagged[i][1] = _rate_input_result;
+                                Console.WriteLine(ex.Message);
                             }
-
-                            if (!HelperCollection.IsNumeric(_available_input) == true)
-                            {
-                                _available_input = HelperCollection.Cleanup(_available_input);
-
-                                _available_input_result = Convert.ToDecimal(_available_input);
-
-                                /*_list_contents.Insert(i, _result_available_input); //This was firstly going to be: _list_contents.Add(Convert.ToInt32(_result));*/
-
-                                /*_list_contents.Add(_result_available_input);*/
-
-                                _jagged[i][2] = _available_input_result;
-                            }
-
-                            /*_list_contents.Add(_result); //This was firstly going to be: _list_contents.Add(Convert.ToInt32(_result));*/
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.Message);
                         }
 
-                        /*if (i != _id_column && i != _rate_column)
+                        for (int i = 0; i < _contents.Length; i++)
                         {
-                            _contents[i].Remove(i); //This was firstly going to be: _input = _contents[i].Split(',').Skip(_rate_column).FirstOrDefault();
-                        }*/
+                            _id_input = _contents[i].Split(',').Skip(_id_column).FirstOrDefault();
+                            _available_input = _contents[i].Split(',').Skip(_available_column).FirstOrDefault();
+                            _rate_input = _contents[i].Split(',').Skip(_rate_column).FirstOrDefault();
 
-                        /*if (i != _id_column && i != _rate_column)
-                        {
-                            _id_rate.Add(_contents[i]); // FIX THIS FROM STORING RECORD 0 AND RECORD 2 TO COLUMN 0 AND COLUMN 2
-                        }*/
+                            _jagged[i] = new decimal[3];
+
+                            try
+                            {
+                                if (!HelperCollection.IsNumeric(_id_input) == true)
+                                {
+                                    _id_input = HelperCollection.Cleanup(_id_input);
+
+                                    _id_input_result = Convert.ToDecimal(_id_input);
+
+                                    _jagged[i][0] = _id_input_result;
+                                }
+
+                                if (!HelperCollection.IsNumeric(_available_input) == true)
+                                {
+                                    _available_input = HelperCollection.Cleanup(_available_input);
+
+                                    _available_input_result = Convert.ToDecimal(_available_input);
+
+                                    _jagged[i][1] = _available_input_result;
+                                }
+
+                                if (!HelperCollection.IsNumeric(_rate_input) == true)
+                                {
+                                    _rate_input = HelperCollection.Cleanup(_rate_input);
+
+                                    _rate_input_result = Convert.ToDecimal(_rate_input);
+
+                                    _jagged[i][2] = _rate_input_result;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                            }
+                        }
+
+                        _jagged = _jagged.OrderBy(i => i[_rate_column]).ToArray();
+
+                        _continue = false;
                     }
-
-                    /*decimal[] s = _list_contents.ToArray();*/
-
-                    /*_list_contents.Sort();*/
+                    else
+                    {
+                        Console.WriteLine(ConfigurationSettings.AppSettings["market_file_message"]);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    Console.WriteLine(ConfigurationSettings.AppSettings["market_file_message"]);
+                    Console.WriteLine(ex.Message);
+                }
+
+                if (_continue == false)
+                {
                 }
             }
 
