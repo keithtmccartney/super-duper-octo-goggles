@@ -19,6 +19,8 @@ namespace super_duper_octo_goggles
 
             int _loan_amount = Convert.ToInt32(args[1]);
 
+            int _loan_value_month = Convert.ToInt32(ConfigurationSettings.AppSettings["loan_value_month"]);
+
             int _loan_value_minimum = Convert.ToInt32(ConfigurationSettings.AppSettings["loan_value_minimum"]);
             int _loan_value_maximum = Convert.ToInt32(ConfigurationSettings.AppSettings["loan_value_maximum"]);
 
@@ -35,7 +37,7 @@ namespace super_duper_octo_goggles
 
             List<string[]> _list_headers = new List<string[]>();
 
-            decimal[][] _jagged;
+            decimal[][] _jagged = new decimal[][] { };
 
             string[] _headers;
             string[] _contents;
@@ -48,6 +50,18 @@ namespace super_duper_octo_goggles
             decimal _id_input_result;
             decimal _rate_input_result;
             decimal _available_input_result;
+
+            int _position;
+
+            decimal[][] _jagged_final = new decimal[][] { };
+
+            string _find;
+            string _replace;
+
+            decimal _loan_year_count;
+            decimal _loan_rate_value;
+            decimal _monthly_repayment;
+            decimal _total_repayment;
 
             Console.WriteLine(ConfigurationSettings.AppSettings["enter_message"]);
 
@@ -202,9 +216,96 @@ namespace super_duper_octo_goggles
                 {
                     Console.WriteLine(ex.Message);
                 }
+            }
 
-                if (_continue == false)
+            if (_continue == false)
+            {
+                _continue = true;
+
+                _available_column = _available_column - 2;
+
+                if (_continue == true)
                 {
+                    while (_continue == true)
+                    {
+                        foreach (decimal[] i in _jagged)
+                        {
+                            foreach (decimal e in i) //This was firstly going to be: foreach (int e = 0; e < i.Length; e++)
+                            {
+                                if (_continue == true)
+                                {
+                                    _position = Array.IndexOf(i, e);
+
+                                    if (_position == _available_column)
+                                    {
+                                        if (e != 0)
+                                        {
+                                            decimal _temporary = e;
+
+                                            _temporary = _temporary - 1;
+
+                                            try
+                                            {
+                                                if (File.Exists(_market_file_path) == true)
+                                                {
+                                                    using (StreamReader _reader = new StreamReader(File.OpenRead(_market_file_path)))
+                                                    {
+                                                        _market_file_contents = _reader.ReadToEnd();
+                                                    }
+
+                                                    _contents = _market_file_contents.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+                                                    _find = Array.Find(_contents, element => element.Contains(i[0].ToString()) && element.Contains(i[1].ToString()) && element.Contains(i[2].ToString()));
+
+                                                    _replace = _find.Replace(e.ToString(), _temporary.ToString());
+
+                                                    using (StreamWriter _writer = new StreamWriter(File.OpenWrite(_market_file_path)))
+                                                    {
+                                                        for (int c = 0; c < _contents.Length; c++)
+                                                        {
+                                                            _writer.WriteLine(_contents[c].Replace(_find, _replace));
+                                                        }
+
+                                                        _writer.Dispose();
+
+                                                        _writer.Close();
+
+                                                        //_writer.Write(String.Join(System.Environment.NewLine, _contents.ToArray()));
+                                                    }
+
+                                                    _loan_year_count = _loan_value_month / 12;
+
+                                                    _loan_rate_value = _loan_amount / 100 * i[_rate_column] * _loan_year_count;
+
+                                                    _monthly_repayment = (_loan_amount + _loan_rate_value) / _loan_value_month;
+
+                                                    _total_repayment = _monthly_repayment * _loan_value_month;
+
+                                                    Console.WriteLine(ConfigurationSettings.AppSettings["rate_message"] + " " + i[_rate_column] + ConfigurationSettings.AppSettings["rate_symbol_message"]);
+                                                    Console.WriteLine(ConfigurationSettings.AppSettings["monthly_repayment_message"] + " " + +_monthly_repayment);
+                                                    Console.WriteLine(ConfigurationSettings.AppSettings["total_repayment_message"] + " " + _total_repayment);
+
+                                                    _continue = false;
+
+                                                    break;
+                                                }
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                Console.WriteLine(ex.Message);
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+
+                            Console.WriteLine();
+                        }
+                    }
                 }
             }
 
