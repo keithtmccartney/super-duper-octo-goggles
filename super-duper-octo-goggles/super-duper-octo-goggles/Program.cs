@@ -17,7 +17,7 @@ namespace super_duper_octo_goggles
         {
             string _market_file = ConfigurationSettings.AppSettings["market_file"];
 
-            int _loan_amount = Convert.ToInt32(args[1]);
+            decimal _loan_amount = Convert.ToInt32(args[1]);
 
             int _loan_value_month = Convert.ToInt32(ConfigurationSettings.AppSettings["loan_value_month"]);
 
@@ -58,7 +58,7 @@ namespace super_duper_octo_goggles
             string _find;
             string _replace;
 
-            decimal _loan_year_count;
+            double _loan_year_count;
             decimal _loan_rate_value;
             decimal _monthly_repayment;
             decimal _total_repayment;
@@ -269,20 +269,16 @@ namespace super_duper_octo_goggles
                                                         _writer.Dispose();
 
                                                         _writer.Close();
-
-                                                        //_writer.Write(String.Join(System.Environment.NewLine, _contents.ToArray()));
                                                     }
 
                                                     _loan_year_count = _loan_value_month / 12;
 
-                                                    _loan_rate_value = _loan_amount / 100 * i[_rate_column] * _loan_year_count;
+                                                    _total_repayment = HelperCollection.DoCalculation(_loan_amount, i[_rate_column], 365, _loan_year_count);
 
-                                                    _monthly_repayment = (_loan_amount + _loan_rate_value) / _loan_value_month;
-
-                                                    _total_repayment = _monthly_repayment * _loan_value_month;
+                                                    _monthly_repayment = _total_repayment / _loan_value_month;
 
                                                     Console.WriteLine(ConfigurationSettings.AppSettings["rate_message"] + " " + i[_rate_column] + ConfigurationSettings.AppSettings["rate_symbol_message"]);
-                                                    Console.WriteLine(ConfigurationSettings.AppSettings["monthly_repayment_message"] + " " + +_monthly_repayment);
+                                                    Console.WriteLine(ConfigurationSettings.AppSettings["monthly_repayment_message"] + " " + _monthly_repayment);
                                                     Console.WriteLine(ConfigurationSettings.AppSettings["total_repayment_message"] + " " + _total_repayment);
 
                                                     _continue = false;

@@ -49,5 +49,10 @@ namespace super_duper_octo_goggles.Helpers
 
             return _value_input;
         }
+
+        public static decimal DoCalculation(decimal principal, decimal rate, int period_count, double year_count)
+        {
+            return principal * (decimal)Math.Pow((double)(1 + rate / period_count), period_count * year_count);
+        }
     }
 }
