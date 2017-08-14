@@ -199,7 +199,7 @@ namespace super_duper_octo_goggles
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine(ex.Message);
+                                /*Console.WriteLine(ex.Message);*/ //Here I need to tidy up the _input types
                             }
                         }
 
